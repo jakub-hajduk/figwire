@@ -9,7 +9,7 @@
     "test": "tsx ./scripts/test-runner.ts",
     "check": "biome check",
     "fix": "biome check --fix",
-    "!release": "pnpm run fix && pnpm run build && changelogen --release --push --publish"
+    "release": "pnpm run fix && pnpm run build && changelogen --release --push --publish"
   },
   "keywords": [
     "figma",
@@ -40,6 +40,7 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },
+  "files": "./dist",
   "exports": {
     "./plugin": {
       "import": {
