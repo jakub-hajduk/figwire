@@ -1,5 +1,5 @@
 import { API } from './shared/api';
-import { client } from './shared/client';
+import { createClient } from './shared/create-client';
 import type { Callback, MethodPromises, Methods } from './shared/types';
 
 const uiPostFn = (message: any) =>
@@ -13,7 +13,7 @@ const uiReceiveFn = (callback: Callback) => {
 
 export const uiApiInstance = new API(uiPostFn, uiReceiveFn);
 
-export function uiApi<T extends Methods>(methods: T): T {
+export function defineApi<T extends Methods>(methods: T): T {
   for (const [name, method] of Object.entries(methods)) {
     uiApiInstance.registerMethod(name, method);
   }
@@ -21,9 +21,9 @@ export function uiApi<T extends Methods>(methods: T): T {
   return methods;
 }
 
-export function pluginApiClient<
+export function client<
   T extends Methods,
   P extends keyof T = string,
 >(): MethodPromises<T> {
-  return client<T, P>(uiApiInstance);
+  return createClient<T, P>(uiApiInstance);
 }

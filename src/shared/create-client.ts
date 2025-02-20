@@ -1,7 +1,7 @@
 import type { API } from './api';
 import type { MethodPromises, Methods } from './types';
 
-export function client<T extends Methods, P extends keyof T = keyof T>(
+export function createClient<T extends Methods, P extends keyof T = keyof T>(
   api: API,
 ): MethodPromises<T> {
   return new Proxy({} as T, {
