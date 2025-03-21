@@ -7,7 +7,11 @@ const pluginPostFn = (message: any) => figma.ui.postMessage(message);
 const pluginReceiveFn = (callback: Callback) =>
   figma.ui.on('message', callback);
 
-export const pluginApiInstance = new API(pluginPostFn, pluginReceiveFn);
+export const pluginApiInstance = new API(
+  'plugin',
+  pluginPostFn,
+  pluginReceiveFn,
+);
 
 export function defineApi<T extends Methods>(methods: T): T {
   for (const [name, method] of Object.entries(methods)) {

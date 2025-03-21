@@ -37,6 +37,33 @@ import { defineApi, client } from 'figwire/plugin';
 import { defineApi, client } from 'figwire/ui';
 ```
 
+### Rejections and errors
+
+By throwing an error in api method definition, you can reject the promise when requesting for the response.
+
+
+```typescript
+// plugin.ts
+const pluginApi = defineApi({
+  checkAge: (age: number) => {
+    if (age > 40) {
+      throw new Error(`You're to old to use this feature`)
+    }
+    
+    doCrazyStuff();
+  }
+});
+
+export type PluginAPI = typeof pluginApi;
+```
+
+
+```typescript
+// ui.ts
+await pluginApiInstance.checkAge(42) // Rejects promise with "You're to old to use this feature" message.
+```
+
+
 ### Typings
 
 The `client` is **not inherently aware** of the API methods (`defineApi`).

@@ -1,6 +1,11 @@
 import { DeferredPromise } from './deferred-promise';
 import { hash } from './hash';
-import { isRequestMessage, isResponseMessage } from './types';
+import {
+  type APIOptions,
+  isErrorMessage,
+  isRequestMessage,
+  isResponseMessage,
+} from './types';
 
 import type { Message, Method, RequestMessage, ResponseMessage } from './types';
 
@@ -10,20 +15,48 @@ export class API {
   hasher = hash();
 
   constructor(
+    private name: string,
     private postFn: (message: Message) => void,
     private receiveFn: (callback: (message: Message) => void) => void,
+    private options: APIOptions = { silentError: false },
   ) {
     this.receiveFn(async (message: Message) => {
       if (isRequestMessage(message)) {
-        const methodName = message.name.split('-')[0];
+        const methodName = message.name.split('\u001F')[0];
         const method = this.callbacks.get(methodName);
-        if (!method) return;
-        const result = await Promise.resolve(method(...message.args));
-        this.postFn({
-          type: 'response',
-          name: message.name,
-          return: result,
-        } as ResponseMessage);
+        if (!method) {
+          const message = `Method "${methodName}" is not defined on "${this.name}" API. (Maybe typo?)`;
+          if (!this.options.silentError) {
+            throw new Error(message);
+          }
+
+          console.error(message);
+          return;
+        }
+
+        try {
+          const result = await Promise.resolve(method(...message.args));
+          this.postFn({
+            type: 'response',
+            name: message.name,
+            return: result,
+          } as ResponseMessage);
+        } catch (error) {
+          if (error instanceof Error) {
+            this.postFn({
+              type: 'error',
+              name: message.name,
+              message: error.message,
+            });
+          }
+        }
+      }
+
+      if (isErrorMessage(message)) {
+        const promise = this.requestQueue.get(message.name);
+        if (!promise) return;
+        promise.reject(message.message);
+        this.requestQueue.delete(message.name);
       }
 
       if (isResponseMessage(message)) {
@@ -37,7 +70,7 @@ export class API {
 
   async request(name: string, args?: any[]) {
     const hash = this.hasher.create();
-    const requestName = `${name}-${hash}`;
+    const requestName = `${name}\u001F${hash}`;
     const promise = new DeferredPromise();
 
     this.requestQueue.set(requestName, promise);

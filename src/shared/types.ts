@@ -6,7 +6,7 @@ export interface Methods {
   [k: string]: Method;
 }
 
-export type Message = RequestMessage | ResponseMessage;
+export type Message = RequestMessage | ResponseMessage | ErrorMessage;
 
 export type Callback = (message: any) => any;
 
@@ -22,12 +22,25 @@ export interface ResponseMessage<R = void> {
   return?: R;
 }
 
+export interface ErrorMessage {
+  type: 'error';
+  name: string;
+  message: string;
+}
+
+export interface APIOptions {
+  silentError: boolean;
+}
+
 export const isRequestMessage = (message: Message): message is RequestMessage =>
   message.type === 'request';
 
 export const isResponseMessage = (
   message: Message,
 ): message is ResponseMessage => message.type === 'response';
+
+export const isErrorMessage = (message: Message): message is ErrorMessage =>
+  message.type === 'error';
 
 export type MethodPromises<T extends Record<string, (...args: any[]) => any>> =
   {

@@ -11,7 +11,7 @@ const uiReceiveFn = (callback: Callback) => {
   });
 };
 
-export const uiApiInstance = new API(uiPostFn, uiReceiveFn);
+export const uiApiInstance = new API('ui', uiPostFn, uiReceiveFn);
 
 export function defineApi<T extends Methods>(methods: T): T {
   for (const [name, method] of Object.entries(methods)) {
