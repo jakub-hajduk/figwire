@@ -21,9 +21,6 @@ export function defineApi<T extends Methods>(methods: T): T {
   return methods;
 }
 
-export function client<
-  T extends Methods,
-  P extends keyof T = string,
->(): MethodPromises<T> {
-  return createClient<T, P>(uiApiInstance);
+export function client<T extends Methods>(): MethodPromises<T> {
+  return createClient<T>(uiApiInstance);
 }
