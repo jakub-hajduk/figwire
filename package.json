@@ -1,6 +1,6 @@
 {
   "name": "figwire",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Bidirectional IPC communication between UI and core in Figma plugins. Lightweight and typed.",
   "type": "module",
   "scripts": {
