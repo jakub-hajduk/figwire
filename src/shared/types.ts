@@ -45,6 +45,6 @@ export const isErrorMessage = (message: Message): message is ErrorMessage =>
 export type MethodPromises<T extends Record<string, (...args: any[]) => any>> =
   {
     [K in keyof T]: T[K] extends (...args: infer A) => infer R
-      ? (...args: A) => Promise<R>
+      ? (...args: A) => Promise<Awaited<R>>
       : never;
   };
